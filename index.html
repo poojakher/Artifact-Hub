@@ -10,10 +10,11 @@
     
     <style>
         :root {
-            --sidebar-width: 340px;
-            --notes-width: 260px; 
-            --bg-page: #fafafc;
+            --sidebar-width: 310px;
+            --notes-width: 250px; 
+            --bg-page: #f4f4f7;
             --bg-sidebar: #ffffff;
+            --bg-pane: #ffffff;
             --pastel-green: #d1f3d9;
             --pastel-blue: #bfdbfe;
             --pastel-purple: #e9d5ff;
@@ -27,181 +28,252 @@
             --dark-text: #1e293b;
             --muted-text: #64748b;
             --border-ui: #e2e8f0;
+            --input-bg: #ffffff;
+            --input-text: #000000;
+        }
+
+        /* DARK MODE VARIANTS */
+        body.dark-theme {
+            --bg-page: #0f172a;
+            --bg-sidebar: #1e293b;
+            --bg-pane: #1e293b;
+            --dark-text: #f1f5f9;
+            --muted-text: #94a3b8;
+            --border-ui: #334155;
+            --input-bg: #334155;
+            --input-text: #ffffff;
+            
+            /* High contrast pastels for dark backgrounds */
+            --pastel-green: #14532d;
+            --pastel-blue: #1e3a8a;
+            --pastel-purple: #581c87;
+            --pastel-pink: #881337;
+            --accent-sage: #4ade80;
+            --accent-ocean: #60a5fa;
+            --accent-purple: #c084fc;
+            --accent-rose: #fb7185;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { display: flex; height: 100vh; background: var(--bg-page); overflow: hidden; color: var(--dark-text); font-weight: 500; }
+        body { display: flex; height: 100vh; background: var(--bg-page); overflow: hidden; color: var(--dark-text); font-size: 13px; }
 
-        /* LEFT PANEL: POOJA K WORKSPACE HUB */
-        .sidebar { width: var(--sidebar-width); border-right: 1px solid var(--border-ui); display: flex; flex-direction: column; background: var(--bg-sidebar); transition: all 0.3s ease; flex-shrink: 0; }
-        .sidebar.hidden { width: 0; overflow: hidden; border-right: none; }
-        .brand { padding: 20px; border-bottom: 2px dashed var(--pastel-blue); background: linear-gradient(135deg, var(--pastel-blue), #ffffff); }
-        .brand h1 { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; color: #111827; line-height: 1.4; }
+        /* LEFT PANEL: COMPACT NAVIGATION EXCLUSIVELY */
+        .sidebar { width: var(--sidebar-width); border-right: 1px solid var(--border-ui); display: flex; flex-direction: column; background: var(--bg-sidebar); flex-shrink: 0; height: 100%; }
+        .brand { padding: 12px 15px; border-bottom: 1px dashed var(--border-ui); }
+        .brand h1 { font-family: 'Playfair Display', serif; font-size: 0.95rem; font-weight: 700; color: var(--dark-text); line-height: 1.3; }
         
-        /* 4 DISTINCT HIGHLIGHTED PASTEL IMPORT BLOCKS */
-        .import-panel { padding: 15px; border-bottom: 1px solid var(--border-ui); display: flex; flex-direction: column; gap: 12px; max-height: 440px; overflow-y: auto; background: #fafafa; }
-        
-        .option-block { padding: 10px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 6px; }
+        /* 4 COMPACT RE-SIZED BLOCK TRACKS */
+        .import-panel { padding: 10px; border-bottom: 1px solid var(--border-ui); display: flex; flex-direction: column; gap: 6px; background: rgba(0,0,0,0.02); }
+        .option-block { padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 4px; }
         .option-block.opt-1 { background: var(--pastel-green); color: var(--accent-sage); }
         .option-block.opt-2 { background: var(--pastel-blue); color: var(--accent-ocean); }
         .option-block.opt-3 { background: var(--pastel-purple); color: var(--accent-purple); }
         .option-block.opt-4 { background: var(--pastel-pink); color: var(--accent-rose); }
         
-        .import-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        .file-label { display: block; padding: 8px; background: #ffffff; border: 1px solid currentColor; border-radius: 6px; text-align: center; font-size: 0.78rem; cursor: pointer; font-weight: 700; color: inherit; }
-        .file-label:hover { opacity: 0.9; }
-        #file-input, #image-file-input { display: none; }
+        .import-title { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .file-label { display: block; padding: 4px; background: var(--input-bg); border: 1px solid currentColor; border-radius: 4px; text-align: center; font-size: 0.72rem; cursor: pointer; font-weight: 700; color: inherit; }
+        #file-input, #image-file-input, #dash-file-input, #dash-image-input { display: none; }
 
-        .paste-group { display: flex; flex-direction: column; gap: 4px; }
-        .paste-input { width: 100%; padding: 6px 8px; border: 1px solid var(--border-ui); border-radius: 4px; font-size: 0.75rem; outline: none; background: #fff; font-weight: 500; color: #000; }
+        .paste-group { display: flex; gap: 4px; align-items: center; }
+        .paste-input { flex: 1; padding: 4px 6px; border: 1px solid var(--border-ui); border-radius: 4px; font-size: 0.7rem; outline: none; background: var(--input-bg); color: var(--input-text); }
+        .mini-btn { padding: 4px 8px; background: var(--input-bg); color: inherit; border: 1px solid currentColor; border-radius: 4px; font-size: 0.7rem; font-weight: 700; cursor: pointer; }
         
-        .action-btn { width: 100%; padding: 8px; background: #ffffff; color: inherit; border: 1px solid currentColor; border-radius: 6px; font-size: 0.78rem; font-weight: 700; cursor: pointer; text-align: center; }
-        .action-btn:hover { background: rgba(255,255,255,0.5); }
+        .action-btn { width: 100%; padding: 4px; background: var(--input-bg); color: inherit; border: 1px solid currentColor; border-radius: 4px; font-size: 0.72rem; font-weight: 700; cursor: pointer; }
+        .upload-status { font-size: 0.62rem; font-weight: 700; margin-top: 1px; font-style: italic; opacity: 0.9; text-align: right; }
 
-        .folder-util { padding: 10px 15px; border-bottom: 1px solid var(--border-ui); background: #fff; }
-        .folder-btn { width: 100%; padding: 10px; background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 6px; font-size: 0.8rem; cursor: pointer; font-weight: 700; color: #334155; text-transform: uppercase; letter-spacing: 0.5px; }
-        .folder-btn:hover { background: #f1f5f9; border-color: #94a3b8; }
-
-        /* EXPLORER NAVIGATION TREE */
-        .explorer-tree { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; }
-        .folder-block { border-left: 3px solid var(--accent-rose); padding-left: 8px; margin-bottom: 4px; display: flex; flex-direction: column; gap: 4px; }
-        .folder-header { font-size: 0.8rem; font-weight: 700; color: #1e293b; display: flex; align-items: center; justify-content: space-between; background: var(--pastel-pink); padding: 6px 10px; border-radius: 4px; }
+        /* NAVIGATION FILES/FOLDERS */
+        .explorer-tree { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
+        .tree-section-header { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; color: var(--muted-text); margin: 4px 0; letter-spacing: 0.5px; }
+        .folder-block { border-left: 2px solid var(--accent-rose); padding-left: 6px; margin-bottom: 2px; display: flex; flex-direction: column; gap: 3px; }
+        .folder-header { font-size: 0.75rem; font-weight: 700; color: var(--dark-text); display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.04); padding: 4px 8px; border-radius: 4px; }
         
-        .file-container { display: flex; align-items: center; justify-content: space-between; background: #f8fafc; padding: 5px 8px; border-radius: 6px; border: 1px solid var(--border-ui); gap: 4px; cursor: pointer; }
-        .file-container:hover { background: #f1f5f9; }
+        .file-container { display: flex; align-items: center; justify-content: space-between; background: var(--bg-pane); padding: 4px 6px; border-radius: 4px; border: 1px solid var(--border-ui); gap: 4px; cursor: pointer; }
         .file-container.active { background: #e0f2fe; border-color: #3b82f6; color: #1d4ed8; }
+        body.dark-theme .file-container.active { background: #1e3a8a; border-color: #60a5fa; color: #ffffff; }
         
-        .file-item-input { flex: 1; font-size: 0.8rem; font-weight: 700; border: 1px solid transparent; background: transparent; color: inherit; text-align: left; outline: none; padding: 2px 4px; font-family: inherit; width: 50%; }
-        .file-item-input:focus { background: #ffffff !important; border-color: #3b82f6 !important; color: #000 !important; }
-        
-        .move-select { font-size: 0.65rem; padding: 1px; border-radius: 4px; border: 1px solid #cbd5e1; max-width: 75px; background: #fff; outline: none; font-weight: 600; }
-        .action-icon { background: none; border: none; cursor: pointer; font-size: 0.85rem; padding: 2px; }
+        .file-item-input { flex: 1; font-size: 0.75rem; font-weight: 700; border: 1px solid transparent; background: transparent; color: inherit; outline: none; padding: 1px; width: 40%; }
+        .file-item-input:focus { background: var(--input-bg) !important; border-color: #3b82f6 !important; color: var(--input-text) !important; }
+        .move-select { font-size: 0.62rem; padding: 1px; border-radius: 4px; border: 1px solid var(--border-ui); max-width: 65px; background: var(--input-bg); color: var(--input-text); font-weight: 600; }
+        .action-icon { background: none; border: none; cursor: pointer; font-size: 0.75rem; }
 
-        /* MIDDLE PANEL: WORKSPACE AND CONTROLS */
-        .workspace { flex: 1; display: flex; flex-direction: column; height: 100vh; background: #f8fafc; position: relative; overflow: hidden; }
-        .control-bar { height: 60px; border-bottom: 1px solid var(--border-ui); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; background: #fff; flex-shrink: 0; }
-        .view-toggle { display: flex; gap: 8px; }
-        .view-toggle button { padding: 8px 14px; font-size: 0.8rem; font-weight: 700; border: 1px solid var(--border-ui); background: #fff; border-radius: 8px; cursor: pointer; }
+        /* MIDDLE PANEL: MAIN WORKSPACE INTERFACES */
+        .workspace { flex: 1; display: flex; flex-direction: column; height: 100vh; background: var(--bg-page); position: relative; overflow: hidden; }
+        .control-bar { height: 48px; border-bottom: 1px solid var(--border-ui); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; background: var(--bg-sidebar); flex-shrink: 0; }
+        .view-toggle { display: flex; gap: 6px; align-items: center; }
+        .view-toggle button { padding: 6px 12px; font-size: 0.75rem; font-weight: 700; border: 1px solid var(--border-ui); background: var(--bg-pane); color: var(--dark-text); border-radius: 6px; cursor: pointer; }
         .view-toggle button.active { background: #1e293b; color: #fff; border-color: #1e293b; }
+        body.dark-theme .view-toggle button.active { background: #f1f5f9; color: #0f172a; border-color: #f1f5f9; }
         
-        .view-toggle button.dir-btn { background: var(--pastel-yellow); border-color: #eab308; color: #713f12; }
+        .view-toggle button.dir-btn { background: var(--pastel-yellow); border-color: rgba(0,0,0,0.1); color: #713f12; }
+        body.dark-theme .view-toggle button.dir-btn { color: #fef08a; }
         .view-toggle button.dir-btn.active { background: #eab308; color: #fff; }
-
-        .view-container { flex: 1; display: flex; overflow: hidden; gap: 12px; padding: 12px; position: relative; }
-        .viewer-pane { flex: 1; background: #fff; border-radius: 12px; border: 1px solid var(--border-ui); display: flex; flex-direction: column; overflow: hidden; }
-        .pane-header { padding: 10px 16px; border-bottom: 1px solid var(--border-ui); background: #f8fafc; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
-        .pane-title { font-size: 0.72rem; font-weight: 700; color: var(--muted-text); text-transform: uppercase; }
-        .pane-select { font-size: 0.8rem; padding: 4px 6px; border: 1px solid var(--border-ui); border-radius: 6px; width: 180px; background: #fff; outline: none; font-weight: 600; }
         
-        .pane-body { flex: 1; background: #fff; position: relative; overflow: auto; outline: none; }
+        .folder-spawn-btn { background: var(--bg-page) !important; border: 2px dashed #cbd5e1 !important; color: #475569 !important; }
+        body.dark-theme .folder-spawn-btn { border-color: #475569 !important; color: #94a3b8 !important; }
+        .theme-toggle-btn { background: none !important; border: none !important; font-size: 1.1rem; padding: 4px !important; }
+
+        .view-container { flex: 1; display: flex; overflow: hidden; gap: 8px; padding: 8px; position: relative; }
+        .viewer-pane { flex: 1; background: var(--bg-pane); border-radius: 8px; border: 1px solid var(--border-ui); display: flex; flex-direction: column; overflow: hidden; }
+        .pane-header { padding: 6px 12px; border-bottom: 1px solid var(--border-ui); background: rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+        .pane-title { font-size: 0.68rem; font-weight: 700; color: var(--muted-text); text-transform: uppercase; }
+        .pane-select { font-size: 0.75rem; padding: 2px 4px; border: 1px solid var(--border-ui); border-radius: 4px; width: 150px; background: var(--input-bg); color: var(--input-text); font-weight: 600; }
+        
+        .pane-body { flex: 1; background: var(--bg-pane); position: relative; overflow: auto; }
         iframe { width: 100%; height: 100%; border: none; position: absolute; top: 0; left: 0; background: #fff; }
         
-        .link-fallback { padding: 40px; text-align: center; font-size: 0.85rem; display: none; flex-direction: column; align-items: center; gap: 12px; justify-content: center; height: 100%; }
-        .fallback-btn { padding: 10px 20px; background: var(--pastel-purple); border: 1px solid #c084fc; border-radius: 6px; text-decoration: none; color: #6b21a8; font-weight: 700; }
-        .placeholder-text { padding: 40px; font-size: 0.85rem; color: var(--muted-text); text-align: center; margin-top: 60px; font-weight: 500; }
+        .link-fallback { padding: 30px; text-align: center; font-size: 0.8rem; display: none; flex-direction: column; align-items: center; gap: 8px; justify-content: center; height: 100%; }
+        .fallback-btn { padding: 8px 16px; background: var(--pastel-purple); border: 1px solid rgba(0,0,0,0.1); border-radius: 6px; text-decoration: none; color: inherit; font-weight: 700; }
+        .placeholder-text { padding: 30px; font-size: 0.8rem; color: var(--muted-text); text-align: center; margin-top: 40px; font-weight: 500; }
 
-        /* THE INTEGRATED HIGH-PERFORMANCE CREATIVE CANVAS EDITOR */
-        .image-canvas-wrapper { width: 100%; height: 100%; display: flex; flex-direction: column; background: #fff; position: absolute; top: 0; left: 0; overflow: hidden; }
-        .canvas-toolbar { padding: 8px 16px; background: #262626; font-size: 0.75rem; color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
-        .canvas-editor { flex: 1; background: #fff; padding: 30px; border: none; resize: none; outline: none; font-size: 1.05rem; line-height: 1.75; font-family: 'Merriweather', serif; color: var(--dark-text); overflow-y: auto; }
-        .canvas-editor img { max-width: 90%; max-height: 500px; object-fit: contain; border-radius: 6px; margin: 15px auto; display: block; box-shadow: 0 4px 10px rgba(0,0,0,0.08); border: 1px solid var(--border-ui); }
+        /* DASHBOARD WELCOME INITIALIZATION SCREEN */
+        .dashboard-home { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-page); z-index: 5; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; }
+        .dash-welcome h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; margin-bottom: 4px; }
+        .dash-welcome p { font-size: 0.82rem; color: var(--muted-text); }
+        .dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 10px; }
         
-        /* RIGHT PANEL: ISOLATED WORKSPACE NOTES FIELD */
-        .notes-pane { width: var(--notes-width); border-left: 1px solid var(--border-ui); display: flex; flex-direction: column; background: #ffffff; flex-shrink: 0; }
-        .notes-header { padding: 16px 16px 10px 16px; border-bottom: 1px solid var(--border-ui); background: linear-gradient(135deg, var(--pastel-purple), #ffffff); }
-        .notes-header h2 { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; }
-        .notes-subtitle { font-size: 0.65rem; text-transform: uppercase; color: #6b21a8; font-weight: 700; margin-top: 4px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .dash-card { padding: 16px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.06); display: flex; flex-direction: column; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+        .dash-card.c1 { background: var(--pastel-green); color: var(--accent-sage); }
+        .dash-card.c2 { background: var(--pastel-blue); color: var(--accent-ocean); }
+        .dash-card.c3 { background: var(--pastel-purple); color: var(--accent-purple); }
+        .dash-card.c4 { background: var(--pastel-pink); color: var(--accent-rose); }
+        .dash-card h3 { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .dash-card p { font-size: 0.78rem; opacity: 0.85; font-weight: 500; line-height: 1.4; }
+        .dash-card .dash-act-btn { margin-top: auto; background: #ffffff; color: #000000; border: 1px solid transparent; padding: 8px; border-radius: 6px; text-align: center; font-weight: 700; font-size: 0.78rem; cursor: pointer; }
+        .dash-card .dash-act-btn:hover { opacity: 0.9; }
+
+        /* CANVAS AND OS RE-ROUTED CLIPBOARD DOM FIELDS */
+        .image-canvas-wrapper { width: 100%; height: 100%; display: flex; flex-direction: column; background: #ffffff; position: absolute; top: 0; left: 0; overflow: hidden; }
+        .canvas-toolbar { padding: 6px 12px; background: #1e293b; font-size: 0.7rem; color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+        .canvas-editor { flex: 1; background: #ffffff; padding: 20px; border: none; resize: none; outline: none; font-size: 0.95rem; line-height: 1.6; font-family: 'Merriweather', serif; color: #1e293b; overflow-y: auto; }
+        .canvas-editor img { max-width: 85%; max-height: 400px; object-fit: contain; border-radius: 6px; margin: 10px auto; display: block; border: 1px solid #e2e8f0; }
+        body.dark-theme .image-canvas-wrapper { background: #fff; } /* Keep editable page target light for clear layout reading */
+
+        /* RIGHT PANEL: WORKSPACE NOTES */
+        .notes-pane { width: var(--notes-width); border-left: 1px solid var(--border-ui); display: flex; flex-direction: column; background: var(--bg-sidebar); flex-shrink: 0; }
+        .notes-header { padding: 12px 14px 8px 14px; border-bottom: 1px solid var(--border-ui); background: rgba(0,0,0,0.02); }
+        .notes-header h2 { font-family: 'Playfair Display', serif; font-size: 0.9rem; font-weight: 700; }
+        .notes-subtitle { font-size: 0.62rem; text-transform: uppercase; color: var(--accent-purple); font-weight: 700; margin-top: 2px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        .toolbar { padding: 8px 12px; background: #fdfdfd; border-bottom: 1px solid var(--border-ui); display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
-        .tool-btn { background: #fff; border: 1px solid var(--border-ui); border-radius: 4px; padding: 4px 8px; font-size: 0.7rem; font-weight: 700; cursor: pointer; color: var(--dark-text); }
-        .tool-btn.dl { background: var(--pastel-pink); color: #9f1239; border-color: var(--accent-rose); margin-left: auto; }
+        .toolbar { padding: 6px 10px; background: rgba(0,0,0,0.01); border-bottom: 1px solid var(--border-ui); display: flex; gap: 4px; align-items: center; }
+        .tool-btn { background: var(--bg-pane); border: 1px solid var(--border-ui); color: var(--dark-text); border-radius: 4px; padding: 2px 6px; font-size: 0.68rem; font-weight: 700; cursor: pointer; }
+        .tool-btn.dl { background: var(--pastel-pink); color: var(--accent-rose); border-color: rgba(0,0,0,0.05); margin-left: auto; }
 
         .notes-container { flex: 1; display: flex; flex-direction: column; }
-        .notes-area { flex: 1; padding: 15px; font-size: 0.82rem; border: none; resize: none; outline: none; line-height: 1.5; background: #fdfbfd; color: #334155; font-weight: 500; }
+        .notes-area { flex: 1; padding: 12px; font-size: 0.78rem; border: none; resize: none; outline: none; line-height: 1.4; background: rgba(0,0,0,0.01); color: var(--dark-text); font-weight: 500; }
 
-        /* DOUBLE PANEL ALL FILES BOARD DIRECTORY PANELS */
-        .directory-board { display: none; position: absolute; top: 12px; left: 12px; right: 12px; bottom: 12px; background: #fff; border-radius: 12px; border: 1px solid var(--border-ui); padding: 24px; overflow: hidden; z-index: 10; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-        .board-container { display: flex; flex-direction: column; height: 100%; gap: 16px; }
+        /* ALL FILES BOARD DIRECTORY OVERLAYS */
+        .directory-board { display: none; position: absolute; top: 8px; left: 8px; right: 8px; bottom: 8px; background: var(--bg-pane); border-radius: 8px; border: 1px solid var(--border-ui); padding: 16px; overflow: hidden; z-index: 10; box-shadow: 0 4px 16px rgba(0,0,0,0.05); }
+        .board-container { display: flex; flex-direction: column; height: 100%; gap: 12px; }
         
-        .inventory-panel { flex: 1; overflow: hidden; display: flex; flex-direction: column; border: 1px solid var(--border-ui); border-radius: 8px; background: #fafafc; }
-        .inventory-title { padding: 10px 16px; background: #f1f5f9; border-bottom: 1px solid var(--border-ui); font-size: 0.78rem; font-weight: 700; color: #475569; text-transform: uppercase; }
+        .inventory-panel { flex: 1; overflow: hidden; display: flex; flex-direction: column; border: 1px solid var(--border-ui); border-radius: 6px; background: rgba(0,0,0,0.01); }
+        .inventory-title { padding: 8px 12px; background: rgba(0,0,0,0.03); border-bottom: 1px solid var(--border-ui); font-size: 0.72rem; font-weight: 700; color: var(--dark-text); text-transform: uppercase; }
         .inventory-table-container { flex: 1; overflow-y: auto; }
-        .inventory-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
-        .inventory-table th, .inventory-table td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border-ui); font-weight: 600; }
-        .inventory-table th { background: #f8fafc; color: #64748b; font-size: 0.7rem; text-transform: uppercase; }
+        .inventory-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
+        .inventory-table th, .inventory-table td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border-ui); font-weight: 600; }
+        .inventory-table th { background: rgba(0,0,0,0.02); color: var(--muted-text); font-size: 0.65rem; text-transform: uppercase; }
 
-        .visual-panel { height: 240px; flex-shrink: 0; display: flex; flex-direction: column; border: 1px solid var(--border-ui); border-radius: 8px; background: #fafafc; overflow: hidden; transition: height 0.2s; }
-        .visual-panel.collapsed { height: 40px; }
-        .visual-title { padding: 10px 16px; background: #f1f5f9; border-bottom: 1px solid var(--border-ui); font-size: 0.78rem; font-weight: 700; color: #475569; text-transform: uppercase; display: flex; align-items: center; justify-content: space-between; }
-        .visual-toggle-icon { cursor: pointer; font-size: 0.85rem; color: #64748b; font-weight: 700; }
+        .visual-panel { height: 180px; flex-shrink: 0; display: flex; flex-direction: column; border: 1px solid var(--border-ui); border-radius: 6px; background: rgba(0,0,0,0.01); overflow: hidden; }
+        .visual-panel.collapsed { height: 32px; }
+        .visual-title { padding: 8px 12px; background: rgba(0,0,0,0.03); border-bottom: 1px solid var(--border-ui); font-size: 0.72rem; font-weight: 700; color: var(--dark-text); text-transform: uppercase; display: flex; align-items: center; justify-content: space-between; }
         
-        .grid-layout { flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; padding: 15px; overflow-y: auto; }
-        .card-item { padding: 10px; border: 1px solid var(--border-ui); border-radius: 6px; background: #fff; cursor: pointer; display: flex; flex-direction: column; gap: 6px; height: 160px; position: relative; }
-        .card-badge { position: absolute; top: 6px; right: 6px; font-size: 0.6rem; padding: 2px 5px; border-radius: 4px; font-weight: 700; text-transform: uppercase; background: #cbd5e1; }
-        .card-preview { flex: 1; border: 1px solid var(--border-ui); border-radius: 4px; background: #fafafa; overflow: hidden; font-size: 0.55rem; padding: 6px; line-height: 1.4; color: var(--muted-text); font-family: serif; }
+        .grid-layout { flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; padding: 10px; overflow-y: auto; }
+        .card-item { padding: 8px; border: 1px solid var(--border-ui); border-radius: 4px; background: var(--bg-pane); cursor: pointer; display: flex; flex-direction: column; gap: 4px; height: 110px; position: relative; }
+        .card-badge { position: absolute; top: 4px; right: 4px; font-size: 0.55rem; padding: 1px 4px; border-radius: 3px; font-weight: 700; text-transform: uppercase; background: var(--border-ui); color: var(--muted-text); }
+        .card-preview { flex: 1; border: 1px solid var(--border-ui); border-radius: 3px; background: rgba(0,0,0,0.02); overflow: hidden; font-size: 0.55rem; padding: 4px; line-height: 1.3; color: var(--muted-text); font-family: serif; }
     </style>
 </head>
 <body>
 
-    <!-- LEFT PANEL: POOJA K HUB -->
     <div class="sidebar" id="app-sidebar">
         <div class="brand">
             <h1>Pooja K : Artifact and Schematic Workspace</h1>
         </div>
         
         <div class="import-panel">
-            <!-- OPTION 1 -->
             <div class="option-block opt-1">
                 <div class="import-title">Option 1: Upload HTML Files</div>
                 <label class="file-label" for="file-input">📁 Open Explorer HTML</label>
                 <input type="file" id="file-input" accept=".html" multiple>
+                <div class="upload-status" id="status-opt1"></div>
             </div>
 
-            <!-- OPTION 2 -->
             <div class="option-block opt-2">
                 <div class="import-title">Option 2: Insert URL Hyperlink</div>
                 <div class="paste-group">
-                    <input type="text" id="link-title" class="paste-input" placeholder="Title Reference...">
-                    <input type="url" id="link-url" class="paste-input" placeholder="Paste link URL...">
-                    <button class="action-btn" onclick="savePastedLink()">Save Web Link</button>
+                    <input type="text" id="link-title" class="paste-input" placeholder="Title...">
+                    <input type="url" id="link-url" class="paste-input" placeholder="URL...">
+                    <button class="mini-btn" onclick="savePastedLink()">Save</button>
                 </div>
             </div>
 
-            <!-- OPTION 3 -->
             <div class="option-block opt-3">
-                <div class="import-title">Option 3: Upload Image from File Explorer</div>
-                <label class="file-label" for="image-file-input">🖼️ Upload from Computer</label>
-                <input type="file" id="image-file-input" accept="image/*,.txt" multiple onchange="handleDirectFileUpload(this)">
+                <div class="import-title">Option 3: Upload Image Asset</div>
+                <label class="file-label" for="image-file-input">🖼️ Open Explorer Media</label>
+                <input type="file" id="image-file-input" accept="image/*,.txt" multiple onchange="handleDirectFileUpload(this, 'status-opt3')">
+                <div class="upload-status" id="status-opt3"></div>
             </div>
 
-            <!-- OPTION 4 -->
             <div class="option-block opt-4">
                 <div class="import-title">Option 4: Create Blank Page/Canvas</div>
                 <button class="action-btn" onclick="createBlankCreativeCanvas()">📄 Create New Page</button>
             </div>
         </div>
 
-        <div class="folder-util">
-            <button class="folder-btn" style="width:100%;" onclick="createNewFolder()">🌸 Create New Folder</button>
+        <div class="explorer-tree">
+            <div class="tree-section-header">Workspace Directory Index</div>
+            <div id="explorer-root"></div>
         </div>
-
-        <div class="explorer-tree" id="explorer-root"></div>
     </div>
 
-    <!-- MIDDLE PANEL: CENTRAL CORE DISPLAY CANVAS WORKING VIEWS -->
     <div class="workspace">
         <div class="control-bar">
-            <div class="current-info"><span style="font-weight:700; font-size: 0.85rem;" id="active-title">No Document Loaded</span></div>
+            <div class="current-info"><span style="font-weight:700; font-size: 0.8rem;" id="active-title">Workspace Initialization Dashboard</span></div>
             <div class="view-toggle">
-                <button id="btn-single" class="active" onclick="setViewMode('single')">Single View</button>
-                <button id="btn-split" onclick="setViewMode('split')">Split Screen View</button>
+                <button class="theme-toggle-btn" onclick="toggleSystemTheme()" title="Toggle Dark/Light Mode">🌓</button>
+                <button id="btn-folder" class="folder-spawn-btn" onclick="createNewFolder()">🌸 Create New Folder</button>
+                <button id="btn-single" onclick="setViewMode('single')">Single View</button>
+                <button id="btn-split" onclick="setViewMode('split')">Split View</button>
                 <button id="btn-directory" class="dir-btn" onclick="setViewMode('directory')">📂 Directory</button>
             </div>
         </div>
 
         <div class="view-container">
-            <!-- DUAL DIRECTORY OVERLAY PANEL -->
+            
+            <div class="dashboard-home" id="dashboard-home-view">
+                <div class="dash-welcome">
+                    <h2>Welcome to Your Schematic Workspace</h2>
+                    <p>Select a file from the left navigation tree to view it, or initialize data components below:</p>
+                </div>
+                <div class="dash-grid">
+                    <div class="dash-card c1">
+                        <h3>Option 1: Upload HTML</h3>
+                        <p>Import text coordinates or thesis raw asset chapters from local HTML draft documents.</p>
+                        <label class="dash-act-btn" for="dash-file-input">Browse Local Files</label>
+                        <input type="file" id="dash-file-input" accept=".html" multiple onchange="routeDashUpload(this, 'file-input')">
+                    </div>
+                    <div class="dash-card c2">
+                        <h3>Option 2: Insert URL</h3>
+                        <p>Map web-hosted dependencies or live cloud resource bookmarks directly into rows.</p>
+                        <div class="paste-group" style="margin-top:auto;">
+                            <input type="text" id="dash-link-title" class="paste-input" placeholder="Bookmark Title...">
+                            <input type="url" id="dash-link-url" class="paste-input" placeholder="https://...">
+                            <button class="mini-btn" style="background:#fff; color:#000;" onclick="saveDashPastedLink()">Save</button>
+                        </div>
+                    </div>
+                    <div class="dash-card c3">
+                        <h3>Option 3: Upload Image</h3>
+                        <p>Load diagram records, layout schematics, or reference captures into isolated page canvases.</p>
+                        <label class="dash-act-btn" for="dash-image-input">Browse Local Images</label>
+                        <input type="file" id="dash-image-input" accept="image/*,.txt" multiple onchange="routeDashUpload(this, 'image-file-input')">
+                    </div>
+                    <div class="dash-card c4">
+                        <h3>Option 4: Create Page</h3>
+                        <p>Launch an active text sheet framework allowing seamless cut, copy, paste, and image drops.</p>
+                        <button class="dash-act-btn" onclick="createBlankCreativeCanvas()">Generate Canvas Sheet</button>
+                    </div>
+                </div>
+            </div>
+
             <div class="directory-board" id="full-directory-view">
                 <div class="board-container">
                     <div class="inventory-panel">
@@ -224,14 +296,13 @@
                     <div class="visual-panel" id="visual-snapshot-panel">
                         <div class="visual-title">
                             <span>Grid View Snapshots</span>
-                            <span class="visual-toggle-icon" onclick="toggleVisualPanel()">Collapse ▲</span>
+                            <span class="action-icon" style="color:inherit;" onclick="toggleVisualPanel()">Collapse ▲</span>
                         </div>
                         <div class="grid-layout" id="directory-grid"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- VIEWPORT PANE A -->
             <div class="viewer-pane" id="pane-a">
                 <div class="pane-header">
                     <span class="pane-title">Viewer Pane A</span>
@@ -253,7 +324,6 @@
                 </div>
             </div>
 
-            <!-- VIEWPORT PANE B -->
             <div class="viewer-pane" id="pane-b" style="display: none;">
                 <div class="pane-header">
                     <span class="pane-title">Viewer Pane B</span>
@@ -277,7 +347,6 @@
         </div>
     </div>
 
-    <!-- RIGHT PANEL: WORKSPACE NOTES NOTEBOOK -->
     <div class="notes-pane">
         <div class="notes-header">
             <h2>Workspace Notes</h2>
@@ -295,17 +364,24 @@
 
     <script>
         let db = { files: {}, folders: [] };
-        let currentViewMode = 'single';
+        let currentViewMode = 'dashboard';
         let currentActiveID = null;
 
         window.onload = function() {
-            const cached = localStorage.getItem('thesis_hub_v10');
-            if (cached) {
-                db = JSON.parse(cached);
-            }
+            const cached = localStorage.getItem('thesis_hub_v11');
+            if (cached) db = JSON.parse(cached);
+            
+            const theme = localStorage.getItem('thesis_theme');
+            if (theme === 'dark') document.body.classList.add('dark-theme');
+            
             updateUIElements();
             setupPasteInterceptors();
         };
+
+        function toggleSystemTheme() {
+            document.body.classList.toggle('dark-theme');
+            localStorage.setItem('thesis_theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
+        }
 
         function setupPasteInterceptors() {
             ['a', 'b'].forEach(pane => {
@@ -339,17 +415,22 @@
                     const activeFileID = selectMenu.value;
                     if(activeFileID && db.files[activeFileID] && db.files[activeFileID].type === 'canvas') {
                         db.files[activeFileID].body = ed.innerHTML;
-                        localStorage.setItem('thesis_hub_v10', JSON.stringify(db));
+                        localStorage.setItem('thesis_hub_v11', JSON.stringify(db));
                     }
                 });
             });
         }
 
-        // OPTION 1 RUNNER: Safe Multi-HTML File Parser Pipeline
+        // OPTION 1 PIPELINE
         document.getElementById('file-input').addEventListener('change', function(e) {
-            const files = e.target.files;
+            handleHtmlFiles(e.target.files, 'status-opt1');
+        });
+
+        function handleHtmlFiles(files, statusId) {
             if(!files.length) return;
             let loadedCount = 0;
+            const statusEl = document.getElementById(statusId);
+            if(statusEl) statusEl.innerText = "Uploading...";
 
             for(let i=0; i<files.length; i++) {
                 const file = files[i];
@@ -361,34 +442,45 @@
                     
                     loadedCount++;
                     if(loadedCount === files.length) {
+                        if(statusEl) statusEl.innerText = `✓ ${files.length} Uploaded`;
                         saveToLocalStorage();
                     }
                 };
                 reader.readAsText(file);
             }
-            this.value = '';
-        });
+        }
 
-        // OPTION 2 RUNNER: Bookmark URL Links
+        // OPTION 2 PIPELINES
         function savePastedLink() {
             const titleInp = document.getElementById('link-title');
             const urlInp = document.getElementById('link-url');
-            let title = titleInp.value.trim() || "Web Reference Resource";
-            let url = urlInp.value.trim();
-            if(!url) return;
-            if(!/^https?:\/\//i.test(url)) url = 'https://' + url;
+            executeLinkSave(titleInp.value, urlInp.value);
+            titleInp.value = ''; urlInp.value = '';
+        }
+        function saveDashPastedLink() {
+            const titleInp = document.getElementById('dash-link-title');
+            const urlInp = document.getElementById('dash-link-url');
+            executeLinkSave(titleInp.value, urlInp.value);
+            titleInp.value = ''; urlInp.value = '';
+        }
+        function executeLinkSave(title, url) {
+            let cleanTitle = title.trim() || "Web Reference Resource";
+            let cleanUrl = url.trim();
+            if(!cleanUrl) return;
+            if(!/^https?:\/\//i.test(cleanUrl)) cleanUrl = 'https://' + cleanUrl;
 
             const id = 'link_' + Date.now();
-            db.files[id] = { title: title, type: 'url', body: url, folder: '', notes: '' };
-            titleInp.value = ''; urlInp.value = '';
+            db.files[id] = { title: cleanTitle, type: 'url', body: cleanUrl, folder: '', notes: '' };
             saveToLocalStorage();
         }
 
-        // OPTION 3 RUNNER: Native File Upload Processing Mechanics
-        function handleDirectFileUpload(input) {
+        // OPTION 3 MEDIA PROCESSING PIPELINE
+        function handleDirectFileUpload(input, statusId) {
             const files = input.files;
             if(!files.length) return;
             let itemsProcessed = 0;
+            const statusEl = document.getElementById(statusId);
+            if(statusEl) statusEl.innerText = "Parsing...";
 
             for(let i=0; i<files.length; i++) {
                 const file = files[i];
@@ -416,13 +508,24 @@
             function checkProgress() {
                 itemsProcessed++;
                 if(itemsProcessed === files.length) {
+                    if(statusEl) statusEl.innerText = `✓ ${files.length} Saved`;
                     saveToLocalStorage();
                 }
             }
             input.value = '';
         }
 
-        // OPTION 4 RUNNER: Combined Rich Page Canvas Generator
+        // DASHBOARD UPLOAD ROUTER INTERMEDIARY
+        function routeDashUpload(dashInput, nativeInputId) {
+            if(nativeInputId === 'file-input') {
+                handleHtmlFiles(dashInput.files, 'status-opt1');
+            } else {
+                handleDirectFileUpload(dashInput, 'status-opt3');
+            }
+            dashInput.value = '';
+        }
+
+        // OPTION 4 PIPELINE
         function createBlankCreativeCanvas() {
             const pageName = prompt("Name your custom canvas sheet page:");
             if(pageName === null) return;
@@ -442,18 +545,10 @@
         }
 
         function saveToLocalStorage() {
-            localStorage.setItem('thesis_hub_v10', JSON.stringify(db));
+            localStorage.setItem('thesis_hub_v11', JSON.stringify(db));
             updateUIElements();
             populateDirectoryPanels();
         }
-
-        // ISOLATED NOTES SYNC RUNNER
-        document.getElementById('notes-input').addEventListener('input', function(e) {
-            if(currentActiveID && db.files[currentActiveID]) {
-                db.files[currentActiveID].notes = e.target.value;
-                localStorage.setItem('thesis_hub_v10', JSON.stringify(db));
-            }
-        });
 
         function updateUIElements() {
             const root = document.getElementById('explorer-root');
@@ -479,8 +574,7 @@
             });
 
             const unassignedHeader = document.createElement('div');
-            unassignedHeader.className = 'import-title';
-            unassignedHeader.style.margin = '10px 0 4px 0';
+            unassignedHeader.className = 'tree-section-header';
             unassignedHeader.innerText = "Root Files";
             root.appendChild(unassignedHeader);
 
@@ -555,7 +649,7 @@
             notesField.value = file.notes || '';
             document.getElementById('notes-target-label').innerText = file.title;
 
-            if(currentViewMode === 'directory') setViewMode('single');
+            if(currentViewMode === 'dashboard' || currentViewMode === 'directory') setViewMode('single');
             loadPaneContent('a', id);
             document.getElementById('select-a').value = id;
         }
@@ -571,10 +665,10 @@
                 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td style="font-weight:700; color:#0f172a;">${item.title}</td>
-                    <td><span style="background:#f1f5f9; padding:2px 6px; border-radius:4px; font-size:0.7rem;">${item.folder || 'Root Area'}</span></td>
-                    <td><strong style="text-transform:uppercase; font-size:0.68rem;">${item.type}</strong></td>
-                    <td><button style="border:1px solid #cbd5e1; background:#fff; padding:2px 6px; border-radius:4px; cursor:pointer; font-size:0.7rem; font-weight:700;" onclick="triggerSelectFile('${id}')">Load Canvas</button></td>
+                    <td style="font-weight:700;">${item.title}</td>
+                    <td><span style="background:rgba(0,0,0,0.05); padding:2px 6px; border-radius:4px; font-size:0.7rem;">${item.folder || 'Root Area'}</span></td>
+                    <td><strong style="text-transform:uppercase; font-size:0.65rem;">${item.type}</strong></td>
+                    <td><button style="border:1px solid var(--border-ui); background:var(--bg-pane); color:var(--dark-text); padding:2px 6px; border-radius:4px; cursor:pointer; font-size:0.68rem; font-weight:700;" onclick="triggerSelectFile('${id}')">Load</button></td>
                 `;
                 tableBody.appendChild(tr);
 
@@ -588,7 +682,7 @@
 
                 card.innerHTML = `
                     <span class="card-badge">${item.type}</span>
-                    <h4 style="font-size:0.75rem; font-weight:700; margin-top:10px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.title}</h4>
+                    <h4 style="font-size:0.7rem; font-weight:700; margin-top:10px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.title}</h4>
                     <div class="card-preview">${previewSnippet}</div>
                 `;
                 card.onclick = () => { triggerSelectFile(id); };
@@ -658,15 +752,18 @@
             document.getElementById('btn-directory').classList.toggle('active', mode === 'directory');
             
             const board = document.getElementById('full-directory-view');
-            const sidebar = document.getElementById('app-sidebar');
+            const dash = document.getElementById('dashboard-home-view');
+            
+            // Hide everything by default
+            board.style.display = "none";
+            dash.style.display = "none";
             
             if(mode === 'directory') {
                 board.style.display = "block";
-                sidebar.classList.add('hidden');
                 populateDirectoryPanels();
+            } else if(mode === 'dashboard') {
+                dash.style.display = "flex";
             } else {
-                board.style.display = "none";
-                sidebar.classList.remove('hidden');
                 document.getElementById('pane-b').style.display = mode === 'split' ? 'flex' : 'none';
                 if(mode === 'single') loadPaneContent('b', null);
             }
@@ -674,7 +771,7 @@
 
         function toggleVisualPanel() {
             const p = document.getElementById('visual-snapshot-panel');
-            const t = p.querySelector('.visual-toggle-icon');
+            const t = p.querySelector('.action-icon');
             p.classList.toggle('collapsed');
             t.innerText = p.classList.contains('collapsed') ? "Expand ▼" : "Collapse ▲";
         }
@@ -691,90 +788,51 @@
             
             if(currentActiveID && db.files[currentActiveID]) {
                 db.files[currentActiveID].notes = textarea.value;
-                localStorage.setItem('thesis_hub_v10', JSON.stringify(db));
+                localStorage.setItem('thesis_hub_v11', JSON.stringify(db));
             }
         }
 
-        // GLOBAL EXPORT SUITE ENGINE
         function triggerSmartExportSuite() {
             if (!currentActiveID || !db.files[currentActiveID]) {
-                alert("Please select an active workspace file down in the left browser hierarchy list before triggering exports.");
+                alert("Please select an active file item from the hierarchy list first.");
                 return;
             }
 
             const file = db.files[currentActiveID];
             const notesText = document.getElementById('notes-input').value;
-
             const modeChoice = prompt(
-                "Choose Export Parameter Level:\n\n" +
-                "Type 1 : Export Active File + Isolated Notepad Contents\n" +
-                "Type 2 : Export All Files mapped within Active Folder Category\n" +
-                "Type 3 : Complete System Backup Export (All Folders & Files)"
+                "Choose Export Option:\n\n" +
+                "1 : Active File + Isolated Notepad Contents\n" +
+                "2 : Everything inside the Current Folder Category\n" +
+                "3 : Complete System Backup (All Folders & Files)"
             );
 
             if (modeChoice === null) return; 
-
-            let finalOutputString = "";
-            let finalFileName = "";
+            let finalOutputString = ""; let finalFileName = "";
 
             if (modeChoice.trim() === "1") {
-                finalFileName = `${file.title.replace(/\s+/g, '_')}_document_notes.txt`;
-                finalOutputString = `=== ISOLATED THESIS FILE RECORD ===\n` +
-                                     `TITLE: ${file.title}\n` +
-                                     `FORMAT TYPE: ${file.type}\n` +
-                                     `ASSIGNED FOLDER: ${file.folder || 'Root Area'}\n\n` +
-                                     `[MY FIELD WORK NOTES]:\n${notesText || 'No notes written yet.'}\n\n` +
-                                     `[CORE MANUSCRIPT TEXT/SOURCE DATA]:\n${file.body}`;
+                finalFileName = `${file.title.replace(/\s+/g, '_')}_notes.txt`;
+                finalOutputString = `=== ISOLATED THESIS RECORD ===\nTITLE: ${file.title}\nFOLDER: ${file.folder || 'Root'}\n\n[NOTES]:\n${notesText}\n\n[CONTENT]:\n${file.body}`;
             } 
             else if (modeChoice.trim() === "2") {
                 const targetFolder = file.folder;
-                if (!targetFolder) {
-                    alert("This document is at the Root Level. Exporting unassigned root-level elements.");
-                }
-                
                 finalFileName = targetFolder ? `Folder_${targetFolder.replace(/\s+/g, '_')}_Manifest.txt` : "Root_Area_Files_Manifest.txt";
-                finalOutputString = `=== THESIS CATEGORY REPOSITORY: ${targetFolder || 'UNASSIGNED ROOT FILES'} ===\n\n`;
+                finalOutputString = `=== REPOSITORY FOLDER: ${targetFolder || 'ROOT'} ===\n\n`;
                 
-                let matchesCount = 0;
                 Object.keys(db.files).forEach(id => {
                     const f = db.files[id];
                     if (f.folder === targetFolder) {
-                        matchesCount++;
-                        finalOutputString += `-------------------------------------------\n` +
-                                             `FILE #${matchesCount}: ${f.title} (${f.type})\n` +
-                                             `-------------------------------------------\n` +
-                                             `[NOTES]:\n${f.notes || ''}\n\n` +
-                                             `[BODY]:\n${f.body}\n\n\n`;
+                        finalOutputString += `File: ${f.title}\n[Notes]:\n${f.notes}\n\n[Body]:\n${f.body}\n\n`;
                     }
                 });
             } 
             else if (modeChoice.trim() === "3") {
-                finalFileName = `Thesis_Directory_Complete_Backup_${Date.now()}.txt`;
-                finalOutputString = `=== POOJA K MASTER DATABASE MASTER EXPORT COMPILATION ===\n` +
-                                     `Generated timestamp reference index: ${new Date().toLocaleString()}\n` +
-                                     `Total Registered Folder Structs: ${db.folders.length}\n` +
-                                     `Total Saved File Inventory Items: ${Object.keys(db.files).length}\n` +
-                                     `========================================================================\n\n`;
-
-                finalOutputString += `>> REGISTERED FOLDER TAXONOMY:\n` + (db.folders.map(f => ` - 📂 ${f}`).join("\n") || "No custom category folders configured.") + `\n\n`;
-
-                Object.keys(db.files).forEach((id, index) => {
-                    const f = db.files[id];
-                    finalOutputString += `========================================================================\n` +
-                                         `RECORD DATA ENTRY ITEM ${index + 1}: [${f.title}]\n` +
-                                         `========================================================================\n` +
-                                         `TYPE PATHWAY: ${f.type}\n` +
-                                         `PARENT FOLDER CONFIG: ${f.folder || 'Root Area'}\n\n` +
-                                         `[RECORD EXTENSION NOTES]:\n${f.notes || ''}\n\n` +
-                                         `[RECORD RAW ATTACHMENT SOURCE BODY]:\n${f.body}\n\n\n`;
-                });
-            } 
-            else {
-                alert("Invalid option selected. Export execution suspended.");
+                finalFileName = `Thesis_Master_Backup_${Date.now()}.txt`;
+                finalOutputString = JSON.stringify(db, null, 2);
+            } else {
                 return;
             }
 
-            // Trigger safe automated local file streaming down to browser
             const blob = new Blob([finalOutputString], { type: 'text/plain;charset=utf-8;' });
             const temporaryLink = document.createElement("a");
             temporaryLink.href = URL.createObjectURL(blob);
